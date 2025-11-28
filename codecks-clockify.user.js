@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         Codecks Clockify
 // @namespace    http://tampermonkey.net/
-// @version      1.0.2
+// @version      1.0.3
 // @description  Clockify in Codecks
 // @author       Qiryth
-// @match        https://plausch.codecks.io/*
+// @match        https://*.codecks.io/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=tampermonkey.net
 // @grant        GM_getValue
 // @grant        GM_setValue
@@ -16,11 +16,18 @@
 (function() {
     'use strict';
 
+    const subdomain = window.location.hostname.split('.')[0];
+
+    const Sub_ClockifyApiKey = `${subdomain}_ClockifyApiKey`;
+    const Sub_ClockifyUserId = `${subdomain}_ClockifyUserId`;
+    const Sub_ClockifyWorkspaceId = `${subdomain}_ClockifyWorkspaceId`;
+    const Sub_ClockifyProjectId = `${subdomain}_ClockifyProjectId`;
+
     // Setup
-    let ClockifyApiKey = GM_getValue("ClockifyApiKey", null);
-    let ClockifyUserId = GM_getValue("ClockifyUserId", null);
-    let ClockifyWorkspaceId = GM_getValue("ClockifyWorkspaceId", null);
-    let ClockifyProjectId = GM_getValue("ClockifyProjectId", null);
+    let ClockifyApiKey = GM_getValue(Sub_ClockifyApiKey, null);
+    let ClockifyUserId = GM_getValue(Sub_ClockifyUserId, null);
+    let ClockifyWorkspaceId = GM_getValue(Sub_ClockifyWorkspaceId, null);
+    let ClockifyProjectId = GM_getValue(Sub_ClockifyProjectId, null);
 
     var UpdateClockifyApiKey = function() {
         ClockifyApiKey = prompt("Please enter your Clockify API Key:");
@@ -31,9 +38,9 @@
             onload: (response) => {
                 const responseText = JSON.parse(response.responseText);
                 if (responseText.id) {
-                    GM_setValue("ClockifyApiKey", ClockifyApiKey);
+                    GM_setValue(Sub_ClockifyApiKey, ClockifyApiKey);
                     ClockifyUserId = responseText.id;
-                    GM_setValue("ClockifyUserId", ClockifyUserId);
+                    GM_setValue(Sub_ClockifyUserId, ClockifyUserId);
                     alert(`Thanks for providing your key: ${responseText.name}`);
                     UpdateClockifyWorkspace();
                 }
@@ -58,7 +65,7 @@
                 const userInput = prompt(promptText);
                 if (responseText[userInput - 1]) {
                     ClockifyWorkspaceId = responseText[userInput - 1].id;
-                    GM_setValue("ClockifyWorkspaceId", ClockifyWorkspaceId);
+                    GM_setValue(Sub_ClockifyWorkspaceId, ClockifyWorkspaceId);
                     alert(`Workspace was set to: ${responseText[userInput - 1].name}`);
                     UpdateClockifyProject();
                 }
@@ -80,7 +87,7 @@
                 const userInput = prompt(promptText);
                 if (responseText[userInput - 1]) {
                     ClockifyProjectId = responseText[userInput - 1].id;
-                    GM_setValue("ClockifyProjectId", ClockifyProjectId);
+                    GM_setValue(Sub_ClockifyProjectId, ClockifyProjectId);
                     alert(`Project was set to: ${responseText[userInput - 1].name}`);
                     window.location.href = '/';
                 }
@@ -99,10 +106,10 @@
     GM_registerMenuCommand("Choose Project", () => UpdateClockifyProject());
     GM_registerMenuCommand('Clear All Data', async () => {
         if (confirm("Are you sure you want to clear your API key and it's related data?\nThis can not be undone.")) {
-            GM_setValue("ClockifyApiKey", null);
-            GM_setValue("ClockifyUserId", null);
-            GM_setValue("ClockifyWorkspaceId", null);
-            GM_setValue("ClockifyProjectId", null);
+            GM_setValue(Sub_ClockifyApiKey, null);
+            GM_setValue(Sub_ClockifyUserId, null);
+            GM_setValue(Sub_ClockifyWorkspaceId, null);
+            GM_setValue(Sub_ClockifyProjectId, null);
             window.location.href = '/';
         }
     });
