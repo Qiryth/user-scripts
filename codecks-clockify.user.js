@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Codecks Clockify
 // @namespace    http://tampermonkey.net/
-// @version      1.0.4
+// @version      1.0.5
 // @description  Clockify in Codecks
 // @author       Qiryth
 // @match        https://*.codecks.io/*
@@ -103,11 +103,6 @@
         });
     }
 
-    if (!ClockifyEnabled) return;
-    if (!ClockifyApiKey) UpdateClockifyApiKey();
-    else if (!ClockifyWorkspaceId) UpdateClockifyWorkspace();
-    else if (!ClockifyProjectId) UpdateClockifyProject();
-
     GM_registerMenuCommand("Change API Key", () => UpdateClockifyApiKey());
     GM_registerMenuCommand("Choose Workspace", () => UpdateClockifyWorkspace());
     GM_registerMenuCommand("Choose Project", () => UpdateClockifyProject());
@@ -120,6 +115,11 @@
             window.location.href = '/';
         }
     });
+
+    if (!ClockifyEnabled) return;
+    if (!ClockifyApiKey) UpdateClockifyApiKey();
+    else if (!ClockifyWorkspaceId) UpdateClockifyWorkspace();
+    else if (!ClockifyProjectId) UpdateClockifyProject();
 
     if (!ClockifyApiKey || !ClockifyUserId || !ClockifyWorkspaceId || !ClockifyProjectId) return;
 
