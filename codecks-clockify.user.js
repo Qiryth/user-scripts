@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Codecks Clockify
 // @namespace    http://tampermonkey.net/
-// @version      1.0.3
+// @version      1.0.4
 // @description  Clockify in Codecks
 // @author       Qiryth
 // @match        https://*.codecks.io/*
@@ -18,12 +18,14 @@
 
     const subdomain = window.location.hostname.split('.')[0];
 
+    const Sub_ClockifyEnabled = `${subdomain}_ClockifyEnabled`;
     const Sub_ClockifyApiKey = `${subdomain}_ClockifyApiKey`;
     const Sub_ClockifyUserId = `${subdomain}_ClockifyUserId`;
     const Sub_ClockifyWorkspaceId = `${subdomain}_ClockifyWorkspaceId`;
     const Sub_ClockifyProjectId = `${subdomain}_ClockifyProjectId`;
 
     // Setup
+    let ClockifyEnabled = GM_getValue(Sub_ClockifyEnabled, true);
     let ClockifyApiKey = GM_getValue(Sub_ClockifyApiKey, null);
     let ClockifyUserId = GM_getValue(Sub_ClockifyUserId, null);
     let ClockifyWorkspaceId = GM_getValue(Sub_ClockifyWorkspaceId, null);
@@ -31,6 +33,10 @@
 
     var UpdateClockifyApiKey = function() {
         ClockifyApiKey = prompt("Please enter your Clockify API Key:");
+	if (ClockifyApiKey == null) {
+	    GM_setValue(Sub_ClockifyEnabled, false);
+	    return;
+	}
         GM_xmlhttpRequest({
             method: "GET",
             url: "https://api.clockify.me/api/v1/user",
@@ -97,6 +103,7 @@
         });
     }
 
+    if (!ClockifyEnabled) return;
     if (!ClockifyApiKey) UpdateClockifyApiKey();
     else if (!ClockifyWorkspaceId) UpdateClockifyWorkspace();
     else if (!ClockifyProjectId) UpdateClockifyProject();
